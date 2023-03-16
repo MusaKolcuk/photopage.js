@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
+import  jwt  from "jsonwebtoken";
 
 const createUser = async (req, res) => {
     try {
@@ -35,7 +36,10 @@ const loginUser = async (req, res) => {
             });
         }
         if(same) {
-            res.status(200).send("Giris basarili");
+            res.status(200).json({
+                user,
+                token: createToken(user._id),            // o an giris yapan kullanicinin _id si ile bir token olustur
+            })
         }
         else {
             res.status(401).json({
@@ -51,5 +55,11 @@ const loginUser = async (req, res) => {
     }
 }
 
+// Token olusturma
+const createToken = (userId) => {
+    return jwt.sign({userId}, process.env.JWT_SECRET, {
+        expiresIn: '1d',                        // Token in gecerlilik suresi 1d yani 1 day(1gün)
+    })
+}
 
-export { createUser, loginUser};
+export { createUser, loginUser, createToken};
