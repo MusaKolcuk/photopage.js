@@ -6,9 +6,17 @@ import pageRoute from "./routes/pageRoute.js";
 import photoRoute from "./routes/photoRoute.js";
 import userRoute from "./routes/userRoute.js";
 import { checkUser } from "./middlewares/authMiddleware.js";
+import fileUpload from "express-fileupload";
+import { v2 as cloudinary } from "cloudinary";  //cloudinary'nin 2. versiyonunu import eder.
 
 dotenv.config();
 
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.CLOUD_API_SECRET,
+
+})
 //connection to the DB
 conn();
 
@@ -19,11 +27,15 @@ const port = 3000;
 app.set("view engine", "ejs");
 
 
+//Middlewares
+
 // static dosyalarin sunulmasi icin middleware
 app.use(express.static('public'))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());                            //cookie parser kullanmak icin
+app.use(fileUpload({useTempFiles:true}))  //useTempFiles seçeneği, yüklenen dosyaların geçici klasörlere kaydedilmesini sağlar. Böylece, dosyaların hafızada tutulması yerine diskte depolanır ve bellek yönetimi daha iyi olur.
+
 
 //routes
 

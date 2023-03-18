@@ -62,7 +62,7 @@
                             <% for (photo of photos) { %>
                             <div class="col-lg-4 col-md-6 ma_bottom30">
                                 <div class="lightbox">
-                                    <img src="/images/g1.jpg" alt="Bridge">
+                                    <img src="<%= photo.url %>" alt="<%= photo.name %>">
                                     <div class="view_main">
                                         <div class="pose">
                                         <a class="read_more" href="/photos/<%= photo._id %>"><img src="/images/ga.png" alt="#"/></a>
@@ -121,7 +121,7 @@
                     </div>
                     <div class="col-md-10 offset-md-1">
                         <!-- Form etiketi belirlenir, veri gönderme yöntemi, hedef adresi ve diğer özellikler tanımlanır -->
-                        <form id="request" class="main_form" method="POST" action="/photos">
+                        <form id="request" class="main_form" method="POST" action="/photos" enctype="multipart/form-data">
                             <div class="row">
                                 <!-- Form elemanları satır ve sütunlar halinde düzenlenir -->
                                 <div class="col-md-12">
@@ -136,7 +136,7 @@
 
                                 <div style="margin-bottom: 20px ;" class="col-md-12">
                                     <!-- Kullanıcıdan dosya seçimi yapması istenir -->
-                                    <input type="file" class="form-control-file">
+                                    <input type="file" name = "image" class="form-control-file">
                                 </div>
 
                                 <div class="col-md-12">

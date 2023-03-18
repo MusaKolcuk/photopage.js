@@ -1,12 +1,29 @@
 import Photo from "../models/photoModel.js";
+import { v2 as cloudinary } from 'cloudinary';  //cloudinary'nin 2. versiyonunu import eder.
+import fs from "fs"
 
 const createPhoto = async (req, res) => {
+
+    const result = await cloudinary.uploader.upload(
+        req.files.image.tempFilePath,                   //yuklenen medya dosyasinin gecici olarak saklandigi path i temsil eder.
+        {
+            use_filename: true,
+            folder: 'lenslight_tr',
+        }
+    );
+
+
+
     try {
         await Photo.create({
             name: req.body.name,
             description: req.body.description,
             user: res.locals.user._id,
+            url: result.secure_url,         //cloudinary isleminden sonra medya dosyasinin güvenli URL'sini atadik.
         });
+
+        fs.unlinkSync(req.files.image.tempFilePath) //temp(tmp) dosyasinda yuklenen resimleri siler. Yani tmp dosyasinda resimler yuklenmez.
+
         res.status(201).redirect("/users/dashboard");
 
     } catch (error) {
@@ -35,7 +52,7 @@ const getAllPhotos = async (req, res) => {
 
 const getAPhoto = async (req, res) => {
     try {
-        const photo = await Photo.findById({_id: req.params.id});
+        const photo = await Photo.findById({_id: req.params.id}).populate("user");
         res.status(200).render('photo', {
             photo,
             link: 'photos',
