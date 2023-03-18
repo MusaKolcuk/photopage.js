@@ -1,19 +1,30 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import  jwt  from "jsonwebtoken";
+import Photo from "../models/photoModel.js";
 
 const createUser = async (req, res) => {
     try {
         const user = await User.create(req.body);
-        res.status(201).json({
-            succeded: true,
-            user,
-    });
+        res.status(201).json({user: user._id});
     } catch (error) {
-        res.status(500).json({
-            succeded: false,
-            error,
-        });
+
+        console.log("ERROR", error);
+
+        let errors2 = {};
+
+        if (error.code === 11000) {
+            errors2.email = "The Email is already registered";
+        }
+
+        if (error.name === 'ValidationError') {
+            Object.keys(error.errors).forEach((key) => {
+                errors2[key] = error.errors[key].message;
+            });
+        }
+
+
+        res.status(400).json(errors2);
     }
 };
 
@@ -36,10 +47,15 @@ const loginUser = async (req, res) => {
             });
         }
         if(same) {
-            res.status(200).json({
-                user,
-                token: createToken(user._id),            // o an giris yapan kullanicinin _id si ile bir token olustur
+
+            const token = createToken(user._id);           // o an giris yapan kullanicinin _id si ile bir token olustur
+            res.cookie('jwt', token, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 *24,                // cookie gecerlilik suresi 1 gun
             })
+
+            res.redirect("/users/dashboard");
+
         }
         else {
             res.status(401).json({
@@ -62,4 +78,13 @@ const createToken = (userId) => {
     })
 }
 
-export { createUser, loginUser, createToken};
+const getDashboardPage = async (req, res) => {
+    const photos = await Photo.find({user: res.locals.user._id})
+    res.render("dashboard", {
+        link: "dashboard",
+        photos,
+    });
+};
+
+
+export { createUser, loginUser, createToken, getDashboardPage};

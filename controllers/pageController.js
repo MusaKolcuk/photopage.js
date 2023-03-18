@@ -1,7 +1,5 @@
 const getIndexPage = (req, res) => {
 
-    console.log("REQUEST USER::", req.user);
-
     res.render("index", {
         link: "index",
     });
@@ -25,5 +23,12 @@ const getLoginPage = (req, res) => {
     });
 };
 
+const getLogout = (req, res) => {
+    res.cookie("jwt", " ", {
+        maxAge: 1,                  // logout a tiklayinca 1 miisaniye icerisinde token sil dedik ve token silindigi icin kullanıcı cikis yapmis oldu.
+    });
+    res.redirect("/");
+}
 
-export { getIndexPage, getAboutPage, getRegisterPage, getLoginPage};
+
+export { getIndexPage, getAboutPage, getRegisterPage, getLoginPage, getLogout};
