@@ -2,6 +2,7 @@ import  express  from "express";
 import dotenv from "dotenv"
 import conn from "./db.js";
 import cookieParser from "cookie-parser";
+import methodOverride from "method-override"        //follow islemlerinde linke tiklayinca PUT islemi yaoabilmek icin.
 import pageRoute from "./routes/pageRoute.js";
 import photoRoute from "./routes/photoRoute.js";
 import userRoute from "./routes/userRoute.js";
@@ -35,7 +36,9 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());                            //cookie parser kullanmak icin
 app.use(fileUpload({useTempFiles:true}))  //useTempFiles seçeneği, yüklenen dosyaların geçici klasörlere kaydedilmesini sağlar. Böylece, dosyaların hafızada tutulması yerine diskte depolanır ve bellek yönetimi daha iyi olur.
-
+app.use(methodOverride("_method", {
+    methods: ["POST","GET"],
+}))
 
 //routes
 

@@ -36,11 +36,15 @@ const createPhoto = async (req, res) => {
 
 const getAllPhotos = async (req, res) => {
     try {
-        const photos = await Photo.find({});
+        const photos = res.locals.user
+        ? await Photo.find({user: { $ne: res.locals.user._id } })     // ternary operator . Eger user varsa filtrelemeyi ona göre yap yoksa filtreleme yapma  dedik.
+        : await Photo.find({});
         res.status(200).render('photos', {
             photos,
             link: 'photos',
         });
+
+
     } catch (error) {
         res.status(500).json({
             succeded: false,
@@ -52,7 +56,7 @@ const getAllPhotos = async (req, res) => {
 
 const getAPhoto = async (req, res) => {
     try {
-        const photo = await Photo.findById({_id: req.params.id}).populate("user");
+        const photo = await Photo.findById({_id: req.params.id}).populate("user");  //photo uzerinden user a gidebiliriz,  populate() ile.
         res.status(200).render('photo', {
             photo,
             link: 'photos',
