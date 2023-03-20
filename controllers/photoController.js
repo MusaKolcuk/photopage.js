@@ -20,6 +20,7 @@ const createPhoto = async (req, res) => {
             description: req.body.description,
             user: res.locals.user._id,
             url: result.secure_url,         //cloudinary isleminden sonra medya dosyasinin güvenli URL'sini atadik.
+            image_id: result.public_id,     //mongoDB de image_id ekledik. Bu image_id resimin public_id sine sahiptir.
         });
 
         fs.unlinkSync(req.files.image.tempFilePath) //temp(tmp) dosyasinda yuklenen resimleri siler. Yani tmp dosyasinda resimler yuklenmez.
@@ -69,4 +70,71 @@ const getAPhoto = async (req, res) => {
     }
 };
 
-export { createPhoto, getAllPhotos, getAPhoto };
+const deletePhoto = async (req, res) => {
+    try {
+
+        const photo = await Photo.findById(req.params.id);
+
+        const photoId = photo.image_id;                 //photo_id yi photonun image_id sine atadik.
+
+        await cloudinary.uploader.destroy(photoId);     //cloudinary den photo silmek icin, destroy silme islemini baslatir.
+
+        await Photo.findByIdAndRemove({ _id: req.params.id});       //veritabanindan photo yu silmek icin
+
+        res.status(200).redirect("/users/dashboard");
+
+
+    } catch (error) {
+        res.status(500).json({
+            succeded: false,
+            error,
+        });
+    }
+};
+
+const updatePhoto = async (req, res) => {
+    try {
+
+        const photo = await Photo.findById(req.params.id);     //update etmek istedigimiz photoyu yakaladik.
+
+        if(req.files) {
+            const photoId = photo.image_id;
+            await cloudinary.uploader.destroy(photoId);
+
+        const result = await cloudinary.uploader.upload(        //photo update ederek yeni phpto eklemek icin
+            req.files.image.tempFilePath,
+            {
+                use_filename: true,
+                folder: 'lenslight_tr',
+            }
+        );
+
+
+        photo.url = result.secure_url
+        photo.image_id = result.public_id
+
+        fs.unlinkSync(req.files.image.tempFilePath) //temp(tmp) dosyasinda yuklenen resimleri siler. Yani tmp dosyasinda resimler yuklenmez.
+
+        }
+
+        photo.name = req.body.name;
+        photo.description = req.body.description;
+
+        photo.save(); //photoyu kayıt ettik.
+
+        res.status(200).redirect(`/photos/${req.params.id}`);
+
+
+    } catch (error) {
+        res.status(500).json({
+            succeded: false,
+            error,
+        });
+    }
+};
+
+
+
+
+
+export { createPhoto, getAllPhotos, getAPhoto, deletePhoto, updatePhoto };

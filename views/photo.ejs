@@ -22,19 +22,89 @@
                   <a class="read_more" href="/users/<%= photo.user._id %>">
                      Photographer -> <%= photo.user.username %></a>
 
-                     
+                     <div style="margin-top: 30px ;">
+                        <ul style="display: flex; justify-content: space-between;">
+                           <li><button style="min-width: 266px;" class="read_more"
+
+                              data-toggle="modal" data-target = "#updateModal">Update</button></li>
+                           <li><a style="min-width: 266px;" class="read_more" href="/photos/<%= photo._id%>?_method=DELETE" onclick="return confirm('Do you want to delete the photo')">Delete</a></li>
+                        </ul>
+                     </div>
 
                </div>
             </div>
             <div class="col-md-6">
                <div class="about_img">
-                  <figure><img src="<%= photo.url %>" alt="<%= photo.name %>"/></figure>
+                  <figure><img  style="z-index:1" src="<%= photo.url %>" alt="<%= photo.name %>"/></figure> <!-- z-index:1 ile add photo seklinin on plana cikmasini sagladik -->
                </div>
             </div>
             </div>
          </div>
       </div>
       <!-- end about -->
-      <!-- end footer -->
+
+
+   <div id = "updateModal"class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+      aria-hidden="true">
+      <!-- Modal kutusunun boyutu ve diğer özellikleri tanımlanır -->
+      <div class="modal-dialog modal-lg">
+         <!-- Modal penceresinin boyutu, gösterilme şekli ve diğer özellikleri belirlenir -->
+         <div class="modal-content">
+               <!-- Modal penceresi içeriği belirtilir -->
+               <div class="modal-header">
+                  <!-- Modal penceresinin üst kısmı tanımlanır, kapatma butonu burada yer alır -->
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div style="margin-top: 50px; margin-bottom: 50px;" class="container">
+                  <!-- Modal içeriğinin yerleştirileceği konteynır belirlenir -->
+                  <div class="row">
+                     <!-- Modal içeriği satır ve sütunlar halinde düzenlenir -->
+                     <div class="col-md-12 ">
+                           <!-- Başlık alanı belirlenir -->
+                           <div class="text_align_center">
+                              <h2 style="
+                              font-size: 30px;
+                              margin-bottom: 20px;
+                              color: #D43A8E;
+                           ">Add New Photo</h2>
+                           </div>
+                     </div>
+                     <div class="col-md-10 offset-md-1">
+                           <!-- Form etiketi belirlenir, veri gönderme yöntemi, hedef adresi ve diğer özellikler tanımlanır -->
+                           <form id="request" class="main_form" method="POST" action="/photos/<%= photo._id %>?_method=PUT" enctype="multipart/form-data">
+                              <div class="row">
+                                 <!-- Form elemanları satır ve sütunlar halinde düzenlenir -->
+                                 <div class="col-md-12">
+                                       <!-- Kullanıcıdan isim bilgisi alınır -->
+                                       <input value="<%= photo.name %>" class="form_control" placeholder="Name" type="text" name="name">
+                                 </div>
+                                 <div class="col-md-12">
+                                       <!-- Kullanıcıdan açıklama bilgisi alınır -->
+                                       <textarea name="description" style="height: 150px;" class="form_control"
+                                          placeholder="Description" rows="5"><%= photo.description %></textarea>
+                                 </div>
+
+                                 <div style="margin-bottom: 20px ;" class="col-md-12">
+                                       <!-- Kullanıcıdan dosya seçimi yapması istenir -->
+                                       <input type="file" name = "image" class="form-control-file">
+                                 </div>
+
+                                 <div class="col-md-12">
+                                       <!-- Formun gönderilmesi için buton belirlenir -->
+                                       <div class="group_form">
+                                          <button class="read_more">Update Photo</button>
+                                       </div>
+                                 </div>
+                              </div>
+                           </form>
+                     </div>
+                  </div>
+               </div>
+         </div>
+      </div>
+   </div>
+
 
       <%- include("partials/_footer") %>
