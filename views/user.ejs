@@ -43,7 +43,7 @@
                 <div class="col-md-12">
                     <div class="text_align_center">
 
-                        <!-- eger infollowers (takip edilenler) de yoksa follow butonu gorunsun yoksa unfollow  -->
+                        <!-- eger unfollowers (takip edilenler) de yoksa follow butonu gorunsun yoksa unfollow  -->
 
                         <% if (!inFollowers) { %>
                             <a style="margin:20px auto;" class="read_more" href="/users/<%= user._id%>/follow?_method=PUT">FOLLOW</a>

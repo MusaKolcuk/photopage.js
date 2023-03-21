@@ -1,9 +1,20 @@
 import nodemailer from "nodemailer"
+import Photo from "../models/photoModel.js";
+import User from "../models/userModel.js"
 
-const getIndexPage = (req, res) => {
+const getIndexPage = async (req, res) => {
+
+    const photos = await Photo.find().sort({uploadedAt: -1}).limit(3);       //photo lari anasayfaya getirmek icin, uploadedAt: -1 ile de en son atilan photo yu en basa aldik.
+                                                                            // limit(3) ile anasayfa da yalnizca 3 gonderi gorunmesini sagladik, 3 ile kisitlandi.
+    const numOfUser = await User.countDocuments({});
+    const numOfPhotos = await Photo.countDocuments({});
+
 
     res.render("index", {
         link: "index",
+        photos,
+        numOfUser,
+        numOfPhotos
     });
 };
 
